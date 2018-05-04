@@ -8,7 +8,7 @@
 
     <el-row :gutter="50">
         <el-col :span="4" class="handle-box">
-          <el-select v-model="params.lab" clearable placeholder="请选择实验室" @change="search()">
+          <el-select v-model="params.labId" clearable placeholder="请选择实验室" @change="search()">
             <el-option
               v-for="value in labList"
               :key="value.id"
@@ -16,6 +16,10 @@
               :value="value.id">
             </el-option>
           </el-select>
+        </el-col>
+        <el-col :span="4" class="handle-box">
+          <el-button type="primary" icon="search" @click="search()">搜 索</el-button>
+          <el-button type="primary" icon="close" @click="reset()">重 置</el-button>
         </el-col>
     </el-row>
 
@@ -30,11 +34,22 @@
       <el-table-column prop="student.name" label="预约学生" />
       <el-table-column prop="teacher.name" label="指导教师"/>
       <el-table-column prop="audit" label="审核状态"/>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="280">
         <template slot-scope="scope">
-          <el-button size="small"
-                     @click="handleEdit(scope.$index, scope.row)">查看
+          <el-popover
+            placement="top"
+            width="600" v-if="scope.row.labStatusLogs.length!==0">
+            <p v-for="item in scope.row.labStatusLogs" :key="item">{{item.content}}</p>
+            <el-button type="small" slot="reference">审核日志</el-button>
+          </el-popover>
+          <template v-if="scope.row.status === '不可用' && scope.row.audit === '未审'">
+            <el-button size="small" type="primary"
+                       @click="handleEdit(scope.$index, scope.row,'通过')">通过
+            </el-button>
+            <el-button size="small" type="danger"
+                       @click="handleEdit(scope.$index, scope.row,'不通过')">不通过
           </el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -53,14 +68,15 @@
 export default {
   data () {
     return {
-      url: this.$baseUrl + '/lab/status/all?sort=student,desc&sort=audit&sort=idBookingDate&sort=idBookingTimeRang',
+      url: this.$baseUrl + '/lab/status/all?sort=student,desc&sort=audit&sort=labStatusLogs,desc&sort=idBookingDate,desc&sort=idBookingTimeRang',
       labUrl: this.$baseUrl + '/labs',
+      auditUrl: this.$baseUrl + '/lab/status/audit',
       tableData: [],
       total: 0,
       params: {
         page: 0,
         size: 20,
-        lab: null
+        labId: null
       },
       labList: []
     }
@@ -81,6 +97,10 @@ export default {
         this.total = res.data.totalElements
       })
     },
+    reset () {
+      this.params.labId = null
+      this.search()
+    },
     handleSizeChange (val) {
       this.params.size = val
       this.search()
@@ -89,7 +109,11 @@ export default {
       this.params.page = val - 1
       this.search()
     },
-    handleEdit (index, row) {
+    handleEdit (index, row, oper) {
+      row.audit = oper
+      this.$axios.put(this.auditUrl, row).then((res) => {
+        this.search()
+      })
     },
     handleSelectionChange (val) {
     }
