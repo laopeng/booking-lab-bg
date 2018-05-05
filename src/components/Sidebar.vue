@@ -54,6 +54,11 @@ export default {
                 index: '/labStatus',
                 title: '预约审核'
               })
+              this.items.push({
+                icon: 'el-icon-menu',
+                index: '/student',
+                title: '学生列表'
+              })
             }
             // if (code.startsWith('sys_')) { // 权限中包含系统管理权限
             //   this.hasSys = true

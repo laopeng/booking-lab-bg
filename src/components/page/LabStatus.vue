@@ -39,7 +39,7 @@
           <el-popover
             placement="top"
             width="600" v-if="scope.row.labStatusLogs.length!==0">
-            <p v-for="item in scope.row.labStatusLogs" :key="item">{{item.content}}</p>
+            <p v-for="item in scope.row.labStatusLogs" :key="item.id">{{item.content}}</p>
             <el-button type="small" slot="reference">审核日志</el-button>
           </el-popover>
           <template v-if="scope.row.status === '不可用' && scope.row.audit === '未审'">
@@ -110,9 +110,17 @@ export default {
       this.search()
     },
     handleEdit (index, row, oper) {
-      row.audit = oper
-      this.$axios.put(this.auditUrl, row).then((res) => {
-        this.search()
+      this.$confirm('此操作将' + oper + '学生的申请, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        row.audit = oper
+        this.$axios.put(this.auditUrl, row).then((res) => {
+          this.search()
+        }).catch(() => {
+          row.audit = '未审'
+        })
       })
     },
     handleSelectionChange (val) {
