@@ -31,16 +31,40 @@
       <el-table-column prop="id.bookingDate" label="日期"/>
       <el-table-column prop="id.bookingTimeRang" label="时间段"/>
       <el-table-column prop="status" label="是否可预约"/>
-      <el-table-column prop="student.name" label="预约学生" />
-      <el-table-column prop="teacher.name" label="指导教师"/>
+      <el-table-column label="预约学生">
+        <template slot-scope="scope" v-if="scope.row.student">
+          <el-popover trigger="hover" placement="top">
+            <p>学号: {{ scope.row.student.number }}</p>
+            <p>专业: {{ scope.row.student.subject }}</p>
+            <p>姓名: {{ scope.row.student.name }}</p>
+            <p>电话: {{ scope.row.student.phone }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{ scope.row.student.name }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column label="指导教师">
+        <template slot-scope="scope" v-if="scope.row.teacher">
+          <el-popover trigger="hover" placement="top">
+            <p>姓名: {{ scope.row.teacher.name }}</p>
+            <p>邮箱: {{ scope.row.teacher.email }}</p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium">{{ scope.row.teacher.name }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column prop="audit" label="审核状态"/>
       <el-table-column label="操作" width="280">
         <template slot-scope="scope">
-          <el-popover
+          <el-popover trigger="hover"
             placement="top"
             width="600" v-if="scope.row.labStatusLogs.length!==0">
             <p v-for="item in scope.row.labStatusLogs" :key="item.id">{{item.content}}</p>
-            <el-button type="small" slot="reference">审核日志</el-button>
+            <div slot="reference" class="name-wrapper">
+              <el-tag size="medium"> 审核日志 </el-tag>
+            </div>
           </el-popover>
           <template v-if="scope.row.status === '不可用' && scope.row.audit === '未审'">
             <el-button size="small" type="primary"
@@ -68,7 +92,7 @@
 export default {
   data () {
     return {
-      url: this.$baseUrl + '/lab/status/all?sort=student,desc&sort=audit&sort=labStatusLogs,desc&sort=idBookingDate,desc&sort=idBookingTimeRang',
+      url: this.$baseUrl + '/lab/status/all?sort=student,desc&sort=audit&sort=modifyTime,desc&sort=idBookingDate,desc&sort=idBookingTimeRang',
       labUrl: this.$baseUrl + '/labs',
       auditUrl: this.$baseUrl + '/lab/status/audit',
       tableData: [],
