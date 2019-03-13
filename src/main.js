@@ -9,8 +9,8 @@ import axios from 'axios'
 
 Vue.use(ElementUI)
 
-Vue.prototype.$baseUrl = 'http://127.0.0.1:8080'
-// Vue.prototype.$baseUrl = ''
+// Vue.prototype.$baseUrl = 'http://127.0.0.1'
+Vue.prototype.$baseUrl = ''
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.prototype.getUrlKey = function (name) {

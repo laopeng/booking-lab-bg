@@ -92,7 +92,7 @@
 export default {
   data () {
     return {
-      url: this.$baseUrl + '/lab/status/all?sort=student,desc&sort=audit&sort=modifyTime,desc&sort=idBookingDate,desc&sort=idBookingTimeRang',
+      url: this.$baseUrl + '/lab/status/all?sort=idBookingDate,desc&sort=audit&sort=idBookingTimeRang',
       labUrl: this.$baseUrl + '/labs',
       auditUrl: this.$baseUrl + '/lab/status/audit',
       tableData: [],
